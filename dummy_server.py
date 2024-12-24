@@ -35,7 +35,7 @@ def ping_server():
         except requests.exceptions.RequestException as e:
             print(f"Error pinging server: {e}")
         # Ping every 5 minutes (300 seconds)
-        time.sleep(180)
+        time.sleep(30)
 
 # Define an endpoint to check the state
 @app.route('/status', methods=['GET'])
