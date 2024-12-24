@@ -1,3 +1,13 @@
+import requests
+
+def fetch_dummy_data():
+    response = requests.get("http://127.0.0.1:5000/status")
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return {"error": "Unable to fetch data"}
+
+
 """
 Взаимодействие с Telegram
 """
