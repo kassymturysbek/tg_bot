@@ -6,7 +6,7 @@ import requests
 
 app = Flask(__name__)
 
-# Variable to track the state (you can modify this as needed)
+# Variable to track the state
 state = {
     "last_checked": None,
     "periodic_data": []
@@ -17,9 +17,9 @@ def periodic_task():
     while True:
         # Update the state or perform some action
         state["last_checked"] = time.strftime('%Y-%m-%d %H:%M:%S')
+        if len(state["periodic_data"]) > 50:  # Limit stored logs to 50 entries
+            state["periodic_data"] = state["periodic_data"][-50:]
         state["periodic_data"].append(f"Checked at {state['last_checked']}")
-        
-        # Print to console for debugging (optional)
         print(f"Periodic task ran at {state['last_checked']}")
         
         # Sleep for 10 seconds
@@ -27,15 +27,16 @@ def periodic_task():
 
 # Function to ping the server to keep it active
 def ping_server():
+    render_url = os.environ.get('RENDER_URL', 'http://127.0.0.1:5000')  # Replace with your Render app's URL
     while True:
         try:
-            # Sending a GET request to your own server to keep it active
-            response = requests.get("http://127.0.0.1:5000/status")
-            print(f"Pinged server, status: {response.status_code}")
+            # Sending a GET request to your Render app's public URL
+            response = requests.get(f"{render_url}/status", timeout=5)
+            print(f"Pinged server at {render_url}/status, status: {response.status_code}")
         except requests.exceptions.RequestException as e:
             print(f"Error pinging server: {e}")
         # Ping every 5 minutes (300 seconds)
-        time.sleep(30)
+        time.sleep(300)
 
 # Define an endpoint to check the state
 @app.route('/status', methods=['GET'])
